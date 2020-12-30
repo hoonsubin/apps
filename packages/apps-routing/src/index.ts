@@ -11,6 +11,7 @@ import calendar from './calendar';
 import claims from './claims';
 import contracts from './contracts';
 import council from './council';
+import customSignature from './custom-signature';
 import democracy from './democracy';
 import explorer from './explorer';
 import extrinsics from './extrinsics';
@@ -35,6 +36,7 @@ export default function create (t: TFunction): Routes {
     addresses(t),
     explorer(t),
     claims(t),
+    customSignature(t),
     poll(t),
     transfer(t),
     genericAsset(t),
