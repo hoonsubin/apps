@@ -9,8 +9,8 @@ import { Route, Switch } from 'react-router';
 import { Icon, Tabs } from '@polkadot/react-components';
 import { useSudo } from '@polkadot/react-hooks';
 
-import SetKey from './SetKey';
-import Sudo from './Sudo';
+import CustomSignTx from './CustomSignTx';
+import GetAccount from './GetAccount';
 import { useTranslation } from './translate';
 
 // NOTE: this is a copy of the SUDO module page. This will gradually change later on.
@@ -26,8 +26,8 @@ function CustomSignatureApp ({ basePath }: Props): React.ReactElement<Props> {
       text: t<string>('Sign Transaction')
     },
     {
-      name: 'key',
-      text: t<string>('Set sudo key')
+      name: 'account',
+      text: t<string>('ECDSA Account')
     }
   ]);
 
@@ -42,18 +42,16 @@ function CustomSignatureApp ({ basePath }: Props): React.ReactElement<Props> {
       {isMine
         ? (
           <Switch>
-            <Route path={`${basePath}/key`}>
-              <SetKey
+            <Route path={`${basePath}/account`}>
+              <GetAccount
                 allAccounts={allAccounts}
                 isMine={isMine}
                 sudoKey={sudoKey}
               />
             </Route>
             <Route>
-              <Sudo
+              <CustomSignTx
                 allAccounts={allAccounts}
-                isMine={isMine}
-                sudoKey={sudoKey}
               />
             </Route>
           </Switch>
