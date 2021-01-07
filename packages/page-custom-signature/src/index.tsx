@@ -6,7 +6,7 @@ import type { AppProps as Props } from '@polkadot/react-components/types';
 import React, { useRef } from 'react';
 import { Route, Switch } from 'react-router';
 
-import { Icon, Tabs } from '@polkadot/react-components';
+import { Tabs } from '@polkadot/react-components';
 import { useSudo } from '@polkadot/react-hooks';
 
 import CustomSignTx from './CustomSignTx';
@@ -17,7 +17,7 @@ import { useTranslation } from './translate';
 
 function CustomSignatureApp ({ basePath }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const { allAccounts, isMine, sudoKey } = useSudo();
+  const { allAccounts } = useSudo();
 
   const itemsRef = useRef([
     {
@@ -39,32 +39,18 @@ function CustomSignatureApp ({ basePath }: Props): React.ReactElement<Props> {
           items={itemsRef.current}
         />
       </header>
-      {isMine
-        ? (
-          <Switch>
-            <Route path={`${basePath}/account`}>
-              <GetAccount
-                allAccounts={allAccounts}
-                isMine={isMine}
-                sudoKey={sudoKey}
-              />
-            </Route>
-            <Route>
-              <CustomSignTx
-                allAccounts={allAccounts}
-              />
-            </Route>
-          </Switch>
-        )
-        : (
-          <article className='error padded'>
-            <div>
-              <Icon icon='ban' />
-              {t<string>('You do not have access to the current sudo key')}
-            </div>
-          </article>
-        )
-      }
+      <Switch>
+        <Route path={`${basePath}/account`}>
+          <GetAccount
+            allAccounts={allAccounts}
+          />
+        </Route>
+        <Route>
+          <CustomSignTx
+            allAccounts={allAccounts}
+          />
+        </Route>
+      </Switch>
     </main>
   );
 }

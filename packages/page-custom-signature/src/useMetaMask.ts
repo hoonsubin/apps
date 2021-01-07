@@ -10,30 +10,22 @@ interface UseMetaMask {
   loadedAccounts: string[];
   activateMetaMask: () => Promise<string[]>;
   ethereum?: EthereumProvider;
-  error?: Error;
 }
 
 export function useMetaMask (): UseMetaMask {
   const { provider } = useEthProvider();
   const [loadedAccounts, setLoadedAccounts] = useState<string[]>([]);
-  const [error, setError] = useState<Error>();
 
   const requestAccounts = useCallback(async () => {
-    try {
-      if (typeof provider === 'undefined') {
-        throw new Error('Cannot detect MetaMask');
-      }
-
-      const accounts = (await provider.request({ method: 'eth_requestAccounts' })) as string[];
-
-      setLoadedAccounts(accounts);
-
-      return accounts;
-    } catch (err) {
-      setError(err);
-
-      return [];
+    if (typeof provider === 'undefined') {
+      throw new Error('Cannot detect MetaMask');
     }
+
+    const accounts = (await provider.request({ method: 'eth_requestAccounts' })) as string[];
+
+    setLoadedAccounts(accounts);
+
+    return accounts;
   }, [provider]);
 
   useEffect(() => {
@@ -52,5 +44,5 @@ export function useMetaMask (): UseMetaMask {
     }
   }, [provider]);
 
-  return { activateMetaMask: requestAccounts, error, ethereum: provider, loadedAccounts };
+  return { activateMetaMask: requestAccounts, ethereum: provider, loadedAccounts };
 }
