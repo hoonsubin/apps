@@ -13,8 +13,6 @@ import CustomSignTx from './CustomSignTx';
 import GetAccount from './GetAccount';
 import { useTranslation } from './translate';
 
-// NOTE: this is a copy of the SUDO module page. This will gradually change later on.
-
 function CustomSignatureApp ({ basePath }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { allAccounts } = useSudo();
@@ -41,9 +39,7 @@ function CustomSignatureApp ({ basePath }: Props): React.ReactElement<Props> {
       </header>
       <Switch>
         <Route path={`${basePath}/account`}>
-          <GetAccount
-            allAccounts={allAccounts}
-          />
+          <GetAccount />
         </Route>
         <Route>
           <CustomSignTx

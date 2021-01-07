@@ -23,9 +23,13 @@ export const ecdsaToSs58 = (publicKey: string, networkPrefix: number): string =>
   return ss58Address;
 };
 
+/**
+ * Recovers the compressed public key from an ECDSA signature signed by the `personal_sign` method.
+ * @param address ethereum public address of the signer
+ * @param msgString message string that was signed
+ * @param rpcSig resulting signature in hex string
+ */
 export const recoverPublicKeyFromSig = (address: string, msgString: string, rpcSig: string): string => {
-  // todo: There is an error with ethereumjs-util package for webpack. Either configure a polyfill or implement everything from scratch
-
   // check if the message is hex encoded or not
   const encodingType = isHex(msgString) ? 'hex' : 'utf8';
   // message hashing is done here, which includes the message prefix
