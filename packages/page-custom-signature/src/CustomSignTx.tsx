@@ -6,17 +6,18 @@ import type { SubmittableExtrinsic } from '@polkadot/api/types';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import { Button, Extrinsic, Icon, TxButton } from '@polkadot/react-components';
+import { Button, Extrinsic, TxButton } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 
 import { useTranslation } from './translate';
 
 interface Props {
+  onClickSignTx: (method: SubmittableExtrinsic<'promise'>) => Promise<string>;
+  sender: string;
   className?: string;
-  isMine: boolean;
 }
 
-function CustomSignTx ({ className, isMine }: Props): React.ReactElement<Props> {
+function CustomSignTx ({ className, sender }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const [method, setMethod] = useState<SubmittableExtrinsic<'promise'> | null>(null);
@@ -26,35 +27,26 @@ function CustomSignTx ({ className, isMine }: Props): React.ReactElement<Props> 
     []
   );
 
-  return isMine
-    ? (
-      <section className={className}>
-        <Extrinsic
-          defaultValue={api.tx.balances.transfer}
-          label={t<string>('submit the following extrinsic')}
-          onChange={_onChangeExtrinsic}
+  return (
+    <section className={className}>
+      <Extrinsic
+        defaultValue={api.tx.balances.transfer}
+        label={t<string>('submit the following extrinsic')}
+        onChange={_onChangeExtrinsic}
+      />
+      <Button.Group>
+        <TxButton
+          icon='sign-in-alt'
+          isDisabled={!method || !api.tx.ethCall.call}
+          isUnsigned
+          label={t<string>('Sign and Send Transaction')}
+          params={[method, sender]}
+          tx={api.tx.ethCall.call}
+          withSpinner
         />
-        <Button.Group>
-          <TxButton
-            icon='sign-in-alt'
-            isDisabled={!method || !api.tx.ethCall.call}
-            isUnsigned
-            label={t<string>('Submit Transaction')}
-            params={[method]}
-            tx={api.tx.ethCall.call}
-            withSpinner
-          />
-        </Button.Group>
-      </section>
-    )
-    : (
-      <article className='error padded'>
-        <div>
-          <Icon icon='ban' />
-          {t<string>('You do not have access to the current sudo key')}
-        </div>
-      </article>
-    );
+      </Button.Group>
+    </section>
+  );
 }
 
 export default React.memo(styled(CustomSignTx)`

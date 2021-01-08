@@ -12,7 +12,7 @@ import { blake2AsU8a, encodeAddress, isEthereumAddress } from '@polkadot/util-cr
  * @param publicKey a 33-byte compressed ECDSA public key in hex string
  * @param networkPrefix the ss58 format used to encode the resulting address
  */
-export const ecdsaToSs58 = (publicKey: string, networkPrefix: number): string => {
+export const ecdsaPubKeyToSs58 = (publicKey: string, networkPrefix: number): string => {
   if (!isHex(publicKey)) {
     throw new Error('Public key is not 0x-prefixed');
   }
