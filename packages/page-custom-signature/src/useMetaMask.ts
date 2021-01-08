@@ -33,8 +33,10 @@ export function useMetaMask (): UseMetaMask {
       const ethereum = provider;
 
       // handle account changes
+      // fixme: this event is being called multiple times
       ethereum.on('accountsChanged', (accounts: string[]) => {
         setLoadedAccounts(accounts);
+
         console.log(`User changed account to ${accounts[0]}`);
       });
 
