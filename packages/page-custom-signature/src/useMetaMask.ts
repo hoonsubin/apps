@@ -35,10 +35,11 @@ export function useMetaMask (): UseMetaMask {
       // handle account changes
       ethereum.on('accountsChanged', (accounts: string[]) => {
         setLoadedAccounts(accounts);
+        console.log(`User changed account to ${accounts[0]}`);
       });
 
       ethereum.on('chainChanged', () => {
-        // refresh the page if the use changes the network
+        // refresh the page if the user changes the network
         window.location.reload();
       });
     }

@@ -3,11 +3,9 @@
 
 import type { AppProps as Props } from '@polkadot/react-components/types';
 
-import React, { useRef } from 'react';
-import { Route, Switch } from 'react-router';
+import React, { useRef, useState } from 'react';
 
 import { Tabs } from '@polkadot/react-components';
-import { useSudo } from '@polkadot/react-hooks';
 
 import CustomSignTx from './CustomSignTx';
 import GetAccount from './GetAccount';
@@ -15,17 +13,13 @@ import { useTranslation } from './translate';
 
 function CustomSignatureApp ({ basePath }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const { allAccounts } = useSudo();
+  const [loadedAccounts, setLoadedAccounts] = useState<string[]>([]);
 
   const itemsRef = useRef([
     {
       isRoot: true,
       name: 'index',
       text: t<string>('Sign Transaction')
-    },
-    {
-      name: 'account',
-      text: t<string>('ECDSA Account')
     }
   ]);
 
@@ -37,16 +31,11 @@ function CustomSignatureApp ({ basePath }: Props): React.ReactElement<Props> {
           items={itemsRef.current}
         />
       </header>
-      <Switch>
-        <Route path={`${basePath}/account`}>
-          <GetAccount />
-        </Route>
-        <Route>
-          <CustomSignTx
-            allAccounts={allAccounts}
-          />
-        </Route>
-      </Switch>
+      <GetAccount
+        onAccountChanged={(accounts: string[]) => { setLoadedAccounts(accounts); }}
+      />
+      {loadedAccounts.length > 0 && (<CustomSignTx sender={loadedAccounts[0]} />)}
+
     </main>
   );
 }
