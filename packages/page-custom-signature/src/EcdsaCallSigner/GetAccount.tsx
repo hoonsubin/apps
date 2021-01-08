@@ -1,4 +1,4 @@
-// Copyright 2017-2020 @polkadot/app-js authors & contributors
+// Copyright 2017-2020 @polkadot/app-custom-signature authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useCallback, useEffect, useState } from 'react';
@@ -6,9 +6,9 @@ import styled from 'styled-components';
 
 import { AddressMini, Button, Icon } from '@polkadot/react-components';
 
-import { useTranslation } from './translate';
-import { useMetaMask } from './useMetaMask';
-import * as utils from './utils';
+import { useTranslation } from '../translate';
+import { useMetaMask } from '../useMetaMask';
+import * as utils from '../utils';
 
 interface Props {
   className?: string;
@@ -102,7 +102,7 @@ function GetAccount ({ className = '', onAccountChanged }: Props): React.ReactEl
         )
       }
       {errorMessage && (
-        <article className='error padded'>
+        <article className='error padded ui--row'>
           <div>
             <Icon icon='ban' />
             {errorMessage.message}

@@ -3,17 +3,15 @@
 
 import type { AppProps as Props } from '@polkadot/react-components/types';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 import { Tabs } from '@polkadot/react-components';
 
-import CustomSignTx from './CustomSignTx';
-import GetAccount from './GetAccount';
+import EcdsaCallSigner from './EcdsaCallSigner';
 import { useTranslation } from './translate';
 
 function CustomSignatureApp ({ basePath }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const [loadedAccounts, setLoadedAccounts] = useState<string[]>([]);
 
   const itemsRef = useRef([
     {
@@ -31,10 +29,7 @@ function CustomSignatureApp ({ basePath }: Props): React.ReactElement<Props> {
           items={itemsRef.current}
         />
       </header>
-      <GetAccount
-        onAccountChanged={(accounts: string[]) => { setLoadedAccounts(accounts); }}
-      />
-      {loadedAccounts.length > 0 && (<CustomSignTx sender={loadedAccounts[0]} />)}
+      <EcdsaCallSigner />
 
     </main>
   );
