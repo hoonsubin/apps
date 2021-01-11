@@ -6,7 +6,7 @@ import type { SubmittableExtrinsic } from '@polkadot/api/types';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import { Button, Extrinsic, TxButton } from '@polkadot/react-components';
+import { Button, Extrinsic, Icon, TxButton } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 
 import { useTranslation } from '../translate';
@@ -24,6 +24,8 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
   const [method, setMethod] = useState<SubmittableExtrinsic<'promise'> | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const [callSignature, setCallSignature] = useState<string>();
+  // internal message state
+  const [errorMessage, setErrorMessage] = useState<Error>();
 
   const _onChangeExtrinsic = useCallback(
     (method: SubmittableExtrinsic<'promise'> | null = null) => {
@@ -34,24 +36,28 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
   );
 
   const _onClickSignCall = useCallback(async () => {
-    setIsBusy(true);
-
     if (method) {
-      // fixme: the call serialization method is different from what the chain is expecting
-      const callPayload = method.toJSON();
+      setIsBusy(true);
+      // fixme: the call serialization method is different from what the chain is expecting, which will spit a `Bad Signature` error
+      const callPayload = method.toHex(true);
 
       try {
+        // reset the error message if it already exists
+        if (typeof errorMessage !== 'undefined') {
+          setErrorMessage(undefined);
+        }
+
         const callSig = await onClickSignTx(callPayload);
 
         setCallSignature(callSig);
       } catch (err) {
-        // todo: add proper error message display
         console.log(err);
+        setErrorMessage(err);
       } finally {
         setIsBusy(false);
       }
     }
-  }, [method, onClickSignTx]);
+  }, [errorMessage, method, onClickSignTx]);
 
   return (
     <section className={className}>
@@ -61,9 +67,10 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
         onChange={_onChangeExtrinsic}
       />
       <Button.Group>
+        {/* TODO: transaction button to be in a modal layout (ask for signature -> waiting for response indicator -> send transaction) */}
         {callSignature
           ? <TxButton
-            icon='sign-in-alt'
+            icon='paper-plane'
             isDisabled={!callSignature}
             isUnsigned
             label={t<string>('Send Transaction')}
@@ -80,6 +87,14 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
           />}
 
       </Button.Group>
+      {errorMessage && (
+        <article className='error padded'>
+          <div>
+            <Icon icon='ban' />
+            {errorMessage.message}
+          </div>
+        </article>
+      )}
     </section>
   );
 }
