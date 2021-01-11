@@ -15,7 +15,7 @@ interface Props {
   onAccountChanged?: (accounts: string[]) => void;
 }
 
-function GetAccount ({ className = '', onAccountChanged }: Props): React.ReactElement<Props> {
+function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { activateMetaMask, ethereum, loadedAccounts } = useMetaMask();
   // internal message state
@@ -30,31 +30,33 @@ function GetAccount ({ className = '', onAccountChanged }: Props): React.ReactEl
 
   const _onClickLoadAccount = useCallback(async () => {
     // note: a placeholder message to login. This should be changed to something that is different from chain to chain
-    const SIGN_MSG = 'hello world';
+    // const SIGN_MSG = 'hello world';
 
     setIsBusy(true);
 
-    // reset the error message if it already exists
-    if (typeof errorMessage !== 'undefined') {
-      setErrorMessage(undefined);
-    }
-
     try {
+      // reset the error message if it already exists
+      if (typeof errorMessage !== 'undefined') {
+        setErrorMessage(undefined);
+      }
+
       // fetch the current active account from MetaMask
       const accounts = await activateMetaMask();
+      const loadingAddr = accounts[0];
+      const loginMsg = `Sign this message to login with address ${loadingAddr}`;
 
       // send a signature method to sign an arbitrary message
       // note: we only get the first account for now
-      const signature = await ethereum?.request({ method: 'personal_sign', params: [accounts[0], SIGN_MSG] });
+      const signature = await ethereum?.request({ method: 'personal_sign', params: [loadingAddr, loginMsg] });
       // recover the ethereum ECDSA compressed public key from the signature
-      const pubKey = utils.recoverPublicKeyFromSig(accounts[0], SIGN_MSG, signature as string);
+      const pubKey = utils.recoverPublicKeyFromSig(loadingAddr, loginMsg, signature as string);
       // encode the public key to Substrate-compatible ss58
       // note: the address prefix is hard-coded right now. Fix this this to be read dynamically
       const ss58Address = utils.ecdsaPubKeyToSs58(pubKey, 42);
 
       setEcdsaAccounts([ss58Address]);
       // set the current address after the ss58 has been loaded
-      setCurrentEthAddress(accounts[0]);
+      setCurrentEthAddress(loadingAddr);
     } catch (err) {
       setErrorMessage(err);
     } finally {
@@ -83,7 +85,7 @@ function GetAccount ({ className = '', onAccountChanged }: Props): React.ReactEl
   }, [ecdsaAccounts, onAccountChanged]);
 
   return (
-    <section className={`${className} ui--row`}>
+    <section className={`${className}`}>
       {ecdsaAccounts.length < 1
         ? (
           <>
@@ -97,12 +99,14 @@ function GetAccount ({ className = '', onAccountChanged }: Props): React.ReactEl
         )
         : (
           <>
-            <AddressMini value={ecdsaAccounts[0]} />
+            <AddressMini label='Current Account'
+              value={ecdsaAccounts[0]}
+              withBalance={true} />
           </>
         )
       }
       {errorMessage && (
-        <article className='error padded ui--row'>
+        <article className='error padded'>
           <div>
             <Icon icon='ban' />
             {errorMessage.message}
@@ -113,9 +117,6 @@ function GetAccount ({ className = '', onAccountChanged }: Props): React.ReactEl
   );
 }
 
-export default React.memo(styled(GetAccount)`
+export default React.memo(styled(EcdsaAccount)`
 
-  .accountLabelled {
-    align-items: center;
-  }
 `);

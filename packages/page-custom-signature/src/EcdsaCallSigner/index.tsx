@@ -5,7 +5,7 @@ import React, { useCallback, useState } from 'react';
 
 import { useMetaMask } from '../useMetaMask';
 import CustomSignTx from './CustomSignTx';
-import GetAccount from './GetAccount';
+import EcdsaAccount from './EcdsaAccount';
 
 function EcdsaCallSigner (): React.ReactElement {
   const { ethereum, loadedAccounts } = useMetaMask();
@@ -14,17 +14,21 @@ function EcdsaCallSigner (): React.ReactElement {
   // request signature from MetaMask
   const _onClickSignatureRequest = useCallback(async (payload: string) => {
     const currentEthAccount = loadedAccounts[0];
+    const extensionMethodPayload = { method: 'personal_sign', params: [currentEthAccount, payload] };
 
-    console.log(`Signing ${payload}`);
+    console.log(`Signing ${JSON.stringify(extensionMethodPayload)}`);
     // note: error handling should be done from the CustomSignTx component so we don't need to wrap this inside a try catch block
-    const signature = await ethereum?.request({ method: 'personal_sign', params: [currentEthAccount, payload] });
+    // fixme: sometimes this will send an empty object to MetaMask RPC which will return a `Cannot read property 'length' of null` error
+    const signature = (await ethereum?.request(extensionMethodPayload)) as string;
+
+    console.log(`Signature: ${signature}`);
 
     return signature;
   }, [ethereum, loadedAccounts]);
 
   return (
     <>
-      <GetAccount
+      <EcdsaAccount
         onAccountChanged={(accounts: string[]) => { setCurrentEcdsaAddress(accounts); }}
       />
       {currentEcdsaAddress.length > 0 && (<CustomSignTx onClickSignTx={_onClickSignatureRequest}
