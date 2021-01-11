@@ -101,7 +101,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
           <>
             <AddressMini label='Current Account'
               value={ecdsaAccounts[0]}
-              withBalance={true} />
+              withBalance />
           </>
         )
       }

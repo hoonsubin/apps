@@ -8,6 +8,7 @@ import styled from 'styled-components';
 
 import { Button, Extrinsic, Icon, TxButton } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
+import { u8aToHex } from '@polkadot/util';
 
 import { useTranslation } from '../translate';
 
@@ -39,7 +40,7 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
     if (method) {
       setIsBusy(true);
       // fixme: the call serialization method is different from what the chain is expecting, which will spit a `Bad Signature` error
-      const callPayload = method.toHex(true);
+      const callPayload = u8aToHex(method.toU8a(true).slice(1));
 
       try {
         // reset the error message if it already exists
