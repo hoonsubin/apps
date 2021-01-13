@@ -4,6 +4,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+// note: this pull the chain metadata from the settings page to make the code shorter
+import useChainInfo from '@polkadot/app-settings/useChainInfo';
 import { AddressMini, Button, Icon } from '@polkadot/react-components';
 
 import { useTranslation } from '../translate';
@@ -18,6 +20,7 @@ interface Props {
 function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { activateMetaMask, ethereum, loadedAccounts } = useMetaMask();
+  const chainInfo = useChainInfo();
   // internal message state
   const [errorMessage, setErrorMessage] = useState<Error>();
   // note: currently, MetaMask will only export one account at a time.
@@ -29,9 +32,6 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
   const [isBusy, setIsBusy] = useState(false);
 
   const _onClickLoadAccount = useCallback(async () => {
-    // note: a placeholder message to login. This should be changed to something that is different from chain to chain
-    // const SIGN_MSG = 'hello world';
-
     setIsBusy(true);
 
     try {
@@ -51,8 +51,8 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
       // recover the ethereum ECDSA compressed public key from the signature
       const pubKey = utils.recoverPublicKeyFromSig(loadingAddr, loginMsg, signature as string);
       // encode the public key to Substrate-compatible ss58
-      // note: the address prefix is hard-coded right now. Fix this this to be read dynamically
-      const ss58Address = utils.ecdsaPubKeyToSs58(pubKey, 42);
+      // note: the default prefix is `42`, which is for the dev node
+      const ss58Address = utils.ecdsaPubKeyToSs58(pubKey, chainInfo?.ss58Format || 42);
 
       setEcdsaAccounts([ss58Address]);
       // set the current address after the ss58 has been loaded
@@ -62,7 +62,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
     } finally {
       setIsBusy(false);
     }
-  }, [activateMetaMask, ethereum, errorMessage]);
+  }, [activateMetaMask, chainInfo, ethereum, errorMessage]);
 
   // check if the user installed MetaMask or not
   useEffect(() => {
