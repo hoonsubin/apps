@@ -20,6 +20,11 @@ export interface EthereumProvider {
   request: (args: RequestArguments) => Promise<unknown>;
 }
 
+export interface EcdsaAddressFormat {
+  ethereum: string;
+  ss58: string;
+}
+
 declare global {
   interface Window {
     ethereum?: EthereumProvider;

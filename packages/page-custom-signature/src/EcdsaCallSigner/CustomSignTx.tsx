@@ -15,6 +15,7 @@ import { useTranslation } from '../translate';
 interface Props {
   // method that takes the payload and returns its signature
   onClickSignTx: (payload: string) => Promise<string | undefined>;
+  // the ss58 encoded address of the sender
   sender: string;
   className?: string;
 }

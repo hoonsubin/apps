@@ -9,12 +9,13 @@ import useChainInfo from '@polkadot/app-settings/useChainInfo';
 import { AddressMini, Button, Icon } from '@polkadot/react-components';
 
 import { useTranslation } from '../translate';
+import { EcdsaAddressFormat } from '../types';
 import { useMetaMask } from '../useMetaMask';
 import * as utils from '../utils';
 
 interface Props {
   className?: string;
-  onAccountChanged?: (accounts: string[]) => void;
+  onAccountChanged?: (account?: EcdsaAddressFormat) => void;
 }
 
 function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.ReactElement<Props> {
@@ -25,9 +26,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
   const [errorMessage, setErrorMessage] = useState<Error>();
   // note: currently, MetaMask will only export one account at a time.
   // so this value will always be either an empty array or an array with one item.
-  const [ecdsaAccounts, setEcdsaAccounts] = useState<string[]>([]);
-
-  const [currentEthAddress, setCurrentEthAddress] = useState<string>();
+  const [ecdsaAccounts, setEcdsaAccounts] = useState<EcdsaAddressFormat>();
 
   const [isBusy, setIsBusy] = useState(false);
 
@@ -54,9 +53,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
       // note: the default prefix is `42`, which is for the dev node
       const ss58Address = utils.ecdsaPubKeyToSs58(pubKey, chainInfo?.ss58Format || 42);
 
-      setEcdsaAccounts([ss58Address]);
-      // set the current address after the ss58 has been loaded
-      setCurrentEthAddress(loadingAddr);
+      setEcdsaAccounts({ ethereum: loadingAddr, ss58: ss58Address });
     } catch (err) {
       setErrorMessage(err);
     } finally {
@@ -64,20 +61,13 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
     }
   }, [activateMetaMask, chainInfo, ethereum, errorMessage]);
 
-  // check if the user installed MetaMask or not
-  useEffect(() => {
-    if (!window.ethereum) {
-      setErrorMessage(new Error('Could not find MetaMask'));
-    }
-  }, []);
-
   // reset the account cache if the user changes their account in MetaMask
   useEffect(() => {
     // check if the selected account is different from the loaded account
-    if (loadedAccounts.length > 0 && currentEthAddress !== loadedAccounts[0]) {
-      setEcdsaAccounts([]);
+    if (loadedAccounts.length > 0 && ecdsaAccounts?.ethereum !== loadedAccounts[0]) {
+      setEcdsaAccounts(undefined);
     }
-  }, [currentEthAddress, loadedAccounts]);
+  }, [ecdsaAccounts, loadedAccounts]);
 
   // emit the account change event handler
   useEffect(() => {
@@ -86,7 +76,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
 
   return (
     <section className={`${className}`}>
-      {ecdsaAccounts.length < 1
+      {typeof ecdsaAccounts === 'undefined'
         ? (
           <>
             <Button
@@ -100,7 +90,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
         : (
           <>
             <AddressMini label='Current Account'
-              value={ecdsaAccounts[0]}
+              value={ecdsaAccounts.ss58}
               withBalance />
           </>
         )
