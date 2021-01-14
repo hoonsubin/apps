@@ -49,9 +49,11 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
       const signature = await ethereum?.request({ method: 'personal_sign', params: [loadingAddr, loginMsg] });
       // recover the ethereum ECDSA compressed public key from the signature
       const pubKey = utils.recoverPublicKeyFromSig(loadingAddr, loginMsg, signature as string);
+
+      console.log(`Public key: ${pubKey}`);
       // encode the public key to Substrate-compatible ss58
       // note: the default prefix is `42`, which is for the dev node
-      const ss58Address = utils.ecdsaPubKeyToSs58(pubKey, chainInfo?.ss58Format || 42);
+      const ss58Address = utils.ecdsaPubKeyToSs58(pubKey, chainInfo?.ss58Format);
 
       setEcdsaAccounts({ ethereum: loadingAddr, ss58: ss58Address });
     } catch (err) {
