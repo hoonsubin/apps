@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as ethUtils from 'ethereumjs-util';
+import { publicKeyConvert } from 'secp256k1';
 
-import { hexToU8a, isHex } from '@polkadot/util';
+import { hexToU8a, isHex, u8aToHex } from '@polkadot/util';
 import { blake2AsU8a, encodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
 
 /**
@@ -12,9 +13,13 @@ import { blake2AsU8a, encodeAddress, isEthereumAddress } from '@polkadot/util-cr
  * @param publicKey a 33-byte compressed ECDSA public key in hex string
  * @param networkPrefix the ss58 format used to encode the resulting address
  */
-export const ecdsaPubKeyToSs58 = (publicKey: string, networkPrefix: number): string => {
+export const ecdsaPubKeyToSs58 = (publicKey: string, networkPrefix?: number): string => {
   if (!isHex(publicKey)) {
     throw new Error('Public key is not 0x-prefixed');
+  }
+
+  if (hexToU8a(publicKey).length !== 33) {
+    throw new Error(`Expected a 33 byte compressed public key, instead got ${publicKey}`);
   }
 
   const ss58PubKey = blake2AsU8a(hexToU8a(publicKey), 256);
@@ -46,7 +51,22 @@ export const recoverPublicKeyFromSig = (address: string, msgString: string, rpcS
   }
 
   const publicKey = ethUtils.ecrecover(msgHash, signature.v, signature.r, signature.s);
-  // const recoveredAddress = ethUtils.addHexPrefix(ethUtils.bufferToHex(ethUtils.pubToAddress(publicKey)));
+  const recoveredAddress = ethUtils.bufferToHex(ethUtils.pubToAddress(publicKey));
 
-  return ethUtils.bufferToHex(publicKey);
+  if (recoveredAddress !== address) {
+    throw new Error(`Expected ${address}, but recovered address is ${recoveredAddress}`);
+  }
+
+  // note: hex string from buffer is not 0x prefixed
+  let prefixedPubKey = publicKey.toString('hex');
+
+  // add a 04 prefix to the uncompressed public key if it hasn't been added
+  if (publicKey.length === 64) {
+    prefixedPubKey = '04' + prefixedPubKey;
+  }
+
+  // compress the public key
+  const compressedKey = publicKeyConvert(Buffer.from(prefixedPubKey, 'hex'), true);
+
+  return u8aToHex(compressedKey);
 };

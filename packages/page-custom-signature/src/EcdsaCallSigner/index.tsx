@@ -3,6 +3,8 @@
 
 import React, { useCallback, useState } from 'react';
 
+import { hexToU8a } from '@polkadot/util';
+
 import { EcdsaAddressFormat } from '../types';
 import { useMetaMask } from '../useMetaMask';
 import CustomSignTx from './CustomSignTx';
@@ -21,7 +23,9 @@ function EcdsaCallSigner (): React.ReactElement {
 
     const signature = (await ethereum?.request(extensionMethodPayload)) as string;
 
-    console.log(`Signature: ${signature}`);
+    // log the number array for debugging
+    console.log({ encodedMethod: hexToU8a(payload) });
+    console.log({ signatureHex: signature, signatureVec: hexToU8a(signature) });
 
     return signature;
   }, [ethereum, currentEthAddress]);
