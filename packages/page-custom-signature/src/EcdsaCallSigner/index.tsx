@@ -3,14 +3,16 @@
 
 import React, { useCallback, useState } from 'react';
 
-import { hexToU8a } from '@polkadot/util';
-
 import { EcdsaAddressFormat } from '../types';
 import { useMetaMask } from '../useMetaMask';
 import CustomSignTx from './CustomSignTx';
 import EcdsaAccount from './EcdsaAccount';
 
-function EcdsaCallSigner (): React.ReactElement {
+interface Props {
+  className: string;
+}
+
+function EcdsaCallSigner ({ className = '' }: Props): React.ReactElement<Props> {
   const { ethereum } = useMetaMask();
   const [currentEthAddress, setCurrentEthAddress] = useState<EcdsaAddressFormat>();
 
@@ -23,22 +25,18 @@ function EcdsaCallSigner (): React.ReactElement {
 
     const signature = (await ethereum?.request(extensionMethodPayload)) as string;
 
-    // log the number array for debugging
-    console.log({ encodedMethod: hexToU8a(payload) });
-    console.log({ signatureHex: signature, signatureVec: hexToU8a(signature) });
-
     return signature;
   }, [ethereum, currentEthAddress]);
 
   return (
-    <>
+    <section className={`${className}`}>
       <EcdsaAccount
         onAccountChanged={setCurrentEthAddress}
       />
       {currentEthAddress && (<CustomSignTx onClickSignTx={_onClickSignatureRequest}
         sender={currentEthAddress.ss58}/>)}
 
-    </>
+    </section>
   );
 }
 

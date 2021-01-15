@@ -77,7 +77,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
   }, [ecdsaAccounts, onAccountChanged]);
 
   return (
-    <section className={`${className}`}>
+    <div className={`${className}`}>
       {typeof ecdsaAccounts === 'undefined'
         ? (
           <>
@@ -105,7 +105,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
           </div>
         </article>
       )}
-    </section>
+    </div>
   );
 }
 
