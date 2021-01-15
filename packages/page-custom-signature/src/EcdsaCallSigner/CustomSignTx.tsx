@@ -6,8 +6,8 @@ import type { SubmittableExtrinsic } from '@polkadot/api/types';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import { Button, Extrinsic, Icon, TxButton } from '@polkadot/react-components';
-import { useApi } from '@polkadot/react-hooks';
+import { Button, Extrinsic, Icon, Modal, TxButton } from '@polkadot/react-components';
+import { useApi, useToggle } from '@polkadot/react-hooks';
 import { u8aToHex } from '@polkadot/util';
 
 import { useTranslation } from '../translate';
@@ -28,6 +28,8 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
   const [callSignature, setCallSignature] = useState<string>();
   // internal message state
   const [errorMessage, setErrorMessage] = useState<Error>();
+
+  const [isModalOpen, toggleModalView] = useToggle();
 
   const _onChangeExtrinsic = useCallback(
     (method: SubmittableExtrinsic<'promise'> | null = null) => {
@@ -52,6 +54,10 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
         const callSig = await onClickSignTx(callPayload);
 
         setCallSignature(callSig);
+
+        if (!isModalOpen) {
+          toggleModalView();
+        }
       } catch (err) {
         console.log(err);
         setErrorMessage(err);
@@ -59,35 +65,55 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
         setIsBusy(false);
       }
     }
-  }, [errorMessage, method, onClickSignTx]);
+  }, [errorMessage, method, onClickSignTx, isModalOpen, toggleModalView]);
+
+  // transaction confirmation modal
+  const TransactionModal = useCallback(() => {
+    return (
+      <>
+        <Modal
+          className='app--accounts-Modal'
+          header={t<string>('Transaction Confirmation')}
+          size='large'
+        >
+          <Modal.Content>
+            <Modal.Columns>
+              <p>{t<string>('Submit the signed transaction to the chain.')}</p>
+            </Modal.Columns>
+          </Modal.Content>
+          <Modal.Actions onCancel={toggleModalView}>
+            <TxButton
+              icon='paper-plane'
+              isDisabled={!callSignature}
+              isUnsigned
+              label={t<string>('Send Transaction')}
+              onStart={toggleModalView}
+              params={[method, sender, callSignature]}
+              tx={api.tx.ethCall.call}
+              withSpinner
+            />
+          </Modal.Actions>
+        </Modal>
+      </>
+    );
+  }, [t, method, sender, callSignature, api, toggleModalView]);
 
   return (
-    <section className={className}>
+    <div className={className}>
       <Extrinsic
         defaultValue={api.tx.balances.transfer}
         label={t<string>('submit the following extrinsic')}
         onChange={_onChangeExtrinsic}
       />
       <Button.Group>
-        {/* TODO: transaction button to be in a modal layout (ask for signature -> waiting for response indicator -> send transaction) */}
-        {callSignature
-          ? <TxButton
-            icon='paper-plane'
-            isDisabled={!callSignature}
-            isUnsigned
-            label={t<string>('Send Transaction')}
-            params={[method, sender, callSignature]}
-            tx={api.tx.ethCall.call}
-            withSpinner
-          />
-          : <Button
-            icon='sign-in-alt'
-            isBusy={isBusy}
-            isDisabled={!method || !api.tx.ethCall.call}
-            label={t<string>('Sign Transaction')}
-            onClick={_onClickSignCall}
-          />}
-
+        {callSignature && isModalOpen && <TransactionModal />}
+        <Button
+          icon='sign-in-alt'
+          isBusy={isBusy || isModalOpen}
+          isDisabled={!method || !api.tx.ethCall.call}
+          label={t<string>('Sign Transaction')}
+          onClick={_onClickSignCall}
+        />
       </Button.Group>
       {errorMessage && (
         <article className='error padded'>
@@ -97,7 +123,7 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
           </div>
         </article>
       )}
-    </section>
+    </div>
   );
 }
 
