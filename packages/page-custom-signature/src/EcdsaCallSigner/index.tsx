@@ -21,8 +21,9 @@ function EcdsaCallSigner ({ className = '' }: Props): React.ReactElement<Props> 
     // we're signing the message with the first account
     const extensionMethodPayload = { method: 'personal_sign', params: [currentEthAddress?.ethereum, payload] };
 
-    console.log(`Sending method ${JSON.stringify(extensionMethodPayload)}`);
+    // console.log(`Sending method ${JSON.stringify(extensionMethodPayload)}`);
 
+    // fixme: this function will not return an error even if the user cancels the signature from MetaMask
     const signature = (await ethereum?.request(extensionMethodPayload)) as string;
 
     return signature;
