@@ -17,26 +17,30 @@ function EcdsaCallSigner ({ className = '' }: Props): React.ReactElement<Props> 
   const [currentEthAddress, setCurrentEthAddress] = useState<EcdsaAddressFormat>();
 
   // request signature from MetaMask
-  const _onClickSignatureRequest = useCallback(async (payload: string) => {
-    // we're signing the message with the first account
-    const extensionMethodPayload = { method: 'personal_sign', params: [currentEthAddress?.ethereum, payload] };
+  const _onClickSignatureRequest = useCallback(
+    async (payload: string) => {
+      // we're signing the message with the first account
+      const extensionMethodPayload = { method: 'personal_sign', params: [currentEthAddress?.ethereum, payload] };
 
-    // console.log(`Sending method ${JSON.stringify(extensionMethodPayload)}`);
+      // console.log(`Sending method ${JSON.stringify(extensionMethodPayload)}`);
 
-    // fixme: this function will not return an error even if the user cancels the signature from MetaMask
-    const signature = (await ethereum?.request(extensionMethodPayload)) as string;
+      // fixme: this function will not return an error even if the user cancels the signature from MetaMask
+      const sigResponse = await ethereum?.request(extensionMethodPayload);
 
-    return signature;
-  }, [ethereum, currentEthAddress]);
+      if (typeof sigResponse !== 'string') {
+        throw new Error('Failed to fetch signature');
+      }
+
+      return sigResponse;
+    },
+    [ethereum, currentEthAddress]
+  );
 
   return (
     <section className={`${className}`}>
-      <EcdsaAccount
-        onAccountChanged={setCurrentEthAddress}
-      />
-      {currentEthAddress && (<CustomSignTx onClickSignTx={_onClickSignatureRequest}
-        sender={currentEthAddress.ss58}/>)}
-
+      <EcdsaAccount onAccountChanged={setCurrentEthAddress} />
+      {currentEthAddress && <CustomSignTx onClickSignTx={_onClickSignatureRequest}
+        sender={currentEthAddress.ss58} />}
     </section>
   );
 }
