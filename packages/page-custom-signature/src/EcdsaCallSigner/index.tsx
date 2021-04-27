@@ -27,6 +27,8 @@ function EcdsaCallSigner ({ className = '' }: Props): React.ReactElement<Props> 
       // fixme: this function will not return an error even if the user cancels the signature from MetaMask
       const sigResponse = await ethereum?.request(extensionMethodPayload);
 
+      console.log(sigResponse);
+
       if (typeof sigResponse !== 'string') {
         throw new Error('Failed to fetch signature');
       }
