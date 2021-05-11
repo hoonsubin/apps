@@ -1,16 +1,16 @@
 {
   "name": "@polkadot/app-custom-signature",
   "private": true,
-  "version": "0.90.2-14",
+  "version": "0.90.2-28",
   "description": "A basic app for using the custom-signature Substrate Pallet",
   "main": "index.js",
   "scripts": {},
-  "author": "Hoon Kim <hoonkim@stake.jp.co>",
+  "author": "Hoon Kim <hoonkim@stake.co.jp>",
   "maintainers": [],
   "license": "Apache-2.0",
   "dependencies": {
     "@babel/runtime": "^7.12.5",
-    "@polkadot/react-components": "^0.90.2-14",
+    "@polkadot/react-components": "^0.90.2-28",
     "ethereumjs-util": "^7.0.7",
     "secp256k1": "^3.8.0"
   }
