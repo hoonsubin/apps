@@ -139,9 +139,8 @@ export function createTesting (t: TFunction): LinkOption[] {
       }
     },
     {
-      info: 'rococoGalital',
-      paraId: 1230,
-      text: t('rpc.rococo.galital', 'Galital PC2', { ns: 'apps-config' }),
+      info: 'Galital',
+      text: t('rpc.galital', 'Galital PC2', { ns: 'apps-config' }),
       providers: {
         StarkleyTech: 'wss://galital-rpc-testnet.starkleytech.com'
       }
@@ -152,6 +151,13 @@ export function createTesting (t: TFunction): LinkOption[] {
       providers: {
         MathWallet: 'wss://galois-hk.maiziqianbao.net/ws',
         'MathWallet Backup': 'wss://galois.maiziqianbao.net/ws'
+      }
+    },
+    {
+      info: 'gamepower',
+      text: t('rpc.gamepower', 'GamePower', { ns: 'apps-config' }),
+      providers: {
+        GamePower: 'wss://gamepower.io'
       }
     },
     {
@@ -198,7 +204,8 @@ export function createTesting (t: TFunction): LinkOption[] {
       text: t('rpc.moonbeam', 'Moonbase Alpha', { ns: 'apps-config' }),
       providers: {
         'Moonbeam Network': 'wss://wss.testnet.moonbeam.network',
-        OnFinality: 'wss://moonbeam-alpha.api.onfinality.io/public-ws'
+        OnFinality: 'wss://moonbeam-alpha.api.onfinality.io/public-ws',
+        'Patract Elara': 'wss://moonbase.moonbeam.elara.patract.io'
       }
     },
     {
