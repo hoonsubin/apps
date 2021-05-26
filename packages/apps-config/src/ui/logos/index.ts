@@ -64,6 +64,7 @@ import nodeManta from './nodes/manta.png';
 import nodeMath from './nodes/math.svg';
 import moonbeam from './nodes/moonbeam.png';
 import nodeMoonrock from './nodes/moonrock.png';
+import moonshadow from './nodes/moonshadow.png';
 import mybank from './nodes/mybank.png';
 import nodeNFTMart from './nodes/nftmart.png';
 import nodeNodle from './nodes/nodle.svg';
@@ -127,8 +128,10 @@ export const chainLogos: Record<string, unknown> = [
   ['HydraDX Snakenet', chainSnakenet],
   ['HydraDX Snakenet Gen2', chainSnakenet],
   ['HydraDX Snakenet Gen3', chainSnakenet],
+  ['Encointer Canary', nodeEncointerNotee],
   ['Encointer PC1', nodeEncointerNotee],
   ['Idavoll', nodeIdavoll],
+  ['IntegriTEE Network', nodeIntegritee],
   ['IntegriTEE PC1', nodeIntegritee],
   ['IpseTestnet', nodeIpse],
   ['Jupiter A1', nodeJupiter],
@@ -141,11 +144,13 @@ export const chainLogos: Record<string, unknown> = [
   ['Kusama CC3', chainKusama],
   ['Kylin Testnet', nodeKylin],
   ['Litentry', nodeLitentry],
+  ['Manta Testnet', nodeManta],
   ['MathChain PC1', nodeMath],
   ['Moonbase Alpha', moonbeam],
   ['Moonbase Stage', moonbeam],
   ['Moonbase Development Testnet', moonbeam],
   ['Moonrock', nodeMoonrock],
+  ['Moonshadow', moonshadow],
   ['mybank.network PC1', mybank],
   ['NFTMart Testnet', nodeNFTMart],
   ['NFTMart Staging', nodeNFTMart],
@@ -242,6 +247,7 @@ export const nodeLogos: Record<string, unknown> = [
   ['Litentry Collator', nodeLitentry],
   ['mandala node', nodeAcala],
   ['Manta Node', nodeManta],
+  ['Manta Node', nodeManta],
   ['Manta Parachain Collator', nodeManta],
   ['Moonrock', nodeMoonrock],
   ['mybank.network', mybank],
@@ -337,6 +343,7 @@ export const namedLogos: Record<string, unknown> = {
   eave: nodeEave,
   edgeware: nodeEdgeware,
   empty: emptyLogo,
+  encointer_canary: nodeEncointerNotee,
   encointer_cantillon: nodeEncointerTeeproxy,
   encointer_gesell: nodeEncointerNotee,
   equilibrium: nodeEquilibrium,
@@ -347,6 +354,7 @@ export const namedLogos: Record<string, unknown> = {
   halongbay: nodePolkaFoundry,
   hanonycash: nodeHanonycash,
   idavoll: nodeIdavoll,
+  integritee: nodeIntegritee,
   ipse: nodeIpse,
   jupiter: nodeJupiter,
   khala: nodeKhala,
@@ -359,6 +367,7 @@ export const namedLogos: Record<string, unknown> = {
   manta: nodeManta,
   moonbaseAlpha: moonbeam,
   moonrock: nodeMoonrock,
+  moonshadow: moonshadow,
   mybank: mybank,
   nftmart: nodeNFTMart,
   nodle: nodeNodle,
