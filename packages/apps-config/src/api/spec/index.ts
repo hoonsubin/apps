@@ -64,6 +64,7 @@ import polkabtc from './polkabtc';
 import polkadex from './polkadex';
 import polkafoundry from './polkafoundry';
 import polymesh from './polymesh';
+import pontem from './pontem';
 import prism from './prism';
 import realis from './realis';
 import riochain from './riochain';
@@ -97,7 +98,7 @@ const spec: Record<string, OverrideBundleDefinition> = {
   Pangolin: pangolin,
   VLN: vln,
   'VLN-PC': vlnrococo,
-  acala,
+  ...acala,
   apron,
   'ares-parachain': aresParachain,
   bifrost: bifrost,
@@ -145,13 +146,12 @@ const spec: Record<string, OverrideBundleDefinition> = {
   kylin,
   laminar,
   litentry,
-  mandala: acala,
   'manta-node': manta,
   'mashnet-node': kilt,
   'mathchain-galois': galois,
-  'moonbase-alphanet': moonbeam,
+  moonbase: moonbeam,
   moonbeam,
-  'moonbeam-standalone': moonbeam,
+  moonriver: moonbeam,
   moonshadow: moonbeam,
   'mybank.network Testnet': mybank,
   neatcoin,
@@ -168,6 +168,7 @@ const spec: Record<string, OverrideBundleDefinition> = {
   plasm,
   'plasm-parachain': plasmParachain,
   polymesh,
+  pontem,
   prism,
   realis,
   'riochain-runtime': riochain,
