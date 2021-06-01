@@ -47,8 +47,15 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
       // send a signature method to sign an arbitrary message
       // note: we only get the first account for now
       const signature = await ethereum?.request({ method: 'personal_sign', params: [loadingAddr, loginMsg] });
+
+      console.log(signature);
+
+      if (typeof signature !== 'string') {
+        throw new Error('Failed to fetch signature');
+      }
+
       // recover the ethereum ECDSA compressed public key from the signature
-      const pubKey = utils.recoverPublicKeyFromSig(loadingAddr, loginMsg, signature as string);
+      const pubKey = utils.recoverPublicKeyFromSig(loadingAddr, loginMsg, signature);
 
       console.log(`Public key: ${pubKey}`);
       // encode the public key to Substrate-compatible ss58
@@ -95,8 +102,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
               value={ecdsaAccounts.ss58}
               withBalance />
           </>
-        )
-      }
+        )}
       {errorMessage && (
         <article className='error padded'>
           <div>
@@ -109,6 +115,4 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
   );
 }
 
-export default React.memo(styled(EcdsaAccount)`
-
-`);
+export default React.memo(styled(EcdsaAccount)``);

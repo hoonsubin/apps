@@ -37,7 +37,7 @@ export function useMetaMask (): UseMetaMask {
       ethereum.on('accountsChanged', (accounts: string[]) => {
         setLoadedAccounts(accounts);
 
-        console.log(`User changed account to ${accounts[0]}`);
+        // console.log(`User changed account to ${accounts[0]}`);
       });
 
       ethereum.on('chainChanged', () => {
