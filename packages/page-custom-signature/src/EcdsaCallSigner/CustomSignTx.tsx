@@ -11,18 +11,19 @@ import { useApi, useToggle } from '@polkadot/react-hooks';
 import { u8aToHex } from '@polkadot/util';
 
 import { useTranslation } from '../translate';
+import { EcdsaAddressFormat } from '../types';
+import { useMetaMask } from '../useMetaMask';
 
 interface Props {
-  // method that takes the payload and returns its signature
-  onClickSignTx: (payload: string) => Promise<string | undefined>;
   // the ss58 encoded address of the sender
-  sender: string;
+  signer: EcdsaAddressFormat;
   className?: string;
 }
 
-function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.ReactElement<Props> {
+function CustomSignTx ({ className, signer }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
+  const { requestSignature } = useMetaMask();
   const [method, setMethod] = useState<SubmittableExtrinsic<'promise'> | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const [callSignature, setCallSignature] = useState<string>();
@@ -51,7 +52,7 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
           setErrorMessage(undefined);
         }
 
-        const callSig = await onClickSignTx(callPayload);
+        const callSig = await requestSignature(callPayload, signer.ethereum);
 
         setCallSignature(callSig);
 
@@ -65,7 +66,7 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
         setIsBusy(false);
       }
     }
-  }, [errorMessage, method, onClickSignTx, isModalOpen, toggleModalView]);
+  }, [errorMessage, method, isModalOpen, requestSignature, signer, toggleModalView]);
 
   // transaction confirmation modal
   const TransactionModal = useCallback(() => {
@@ -88,7 +89,7 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
               isUnsigned
               label={t<string>('Send Transaction')}
               onStart={toggleModalView}
-              params={[method, sender, callSignature]}
+              params={[method, signer.ss58, callSignature]}
               tx={api.tx.ethCall.call}
               withSpinner
             />
@@ -96,7 +97,7 @@ function CustomSignTx ({ className, onClickSignTx, sender }: Props): React.React
         </Modal>
       </>
     );
-  }, [t, method, sender, callSignature, api, toggleModalView]);
+  }, [t, method, signer, callSignature, api, toggleModalView]);
 
   return (
     <div className={className}>

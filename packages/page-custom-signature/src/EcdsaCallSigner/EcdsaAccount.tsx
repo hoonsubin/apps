@@ -20,7 +20,7 @@ interface Props {
 
 function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const { activateMetaMask, ethereum, loadedAccounts } = useMetaMask();
+  const { activateMetaMask, loadedAccounts, requestSignature } = useMetaMask();
   const chainInfo = useChainInfo();
   // internal message state
   const [errorMessage, setErrorMessage] = useState<Error>();
@@ -46,7 +46,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
 
       // send a signature method to sign an arbitrary message
       // note: we only get the first account for now
-      const signature = await ethereum?.request({ method: 'personal_sign', params: [loadingAddr, loginMsg] });
+      const signature = await requestSignature(loginMsg, loadingAddr);
 
       console.log(signature);
 
@@ -68,7 +68,7 @@ function EcdsaAccount ({ className = '', onAccountChanged }: Props): React.React
     } finally {
       setIsBusy(false);
     }
-  }, [activateMetaMask, chainInfo, ethereum, errorMessage]);
+  }, [activateMetaMask, chainInfo, errorMessage, requestSignature]);
 
   // reset the account cache if the user changes their account in MetaMask
   useEffect(() => {

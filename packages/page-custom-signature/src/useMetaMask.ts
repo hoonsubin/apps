@@ -9,6 +9,7 @@ import { useEthProvider } from './useEthProvider';
 interface UseMetaMask {
   loadedAccounts: string[];
   activateMetaMask: () => Promise<string[]>;
+  requestSignature: (sigPayload: string, account: string) => Promise<string>;
   ethereum?: EthereumProvider;
 }
 
@@ -27,6 +28,25 @@ export function useMetaMask (): UseMetaMask {
 
     return accounts;
   }, [provider]);
+
+  const requestSignature = useCallback(
+    async (message: string, account: string = loadedAccounts[0]) => {
+      if (!account) {
+        // note: we can call `requestAccounts` here to ensure that an account always is loaded
+        throw new Error('No account was provided for the signature');
+      }
+
+      const extensionMethodPayload = { method: 'personal_sign', params: [account, message] };
+      const sigResponse = await provider?.request(extensionMethodPayload);
+
+      if (typeof sigResponse !== 'string') {
+        throw new Error('Failed to get signature');
+      }
+
+      return sigResponse;
+    },
+    [provider, loadedAccounts]
+  );
 
   useEffect(() => {
     if (provider?.isMetaMask) {
@@ -47,5 +67,5 @@ export function useMetaMask (): UseMetaMask {
     }
   }, [provider]);
 
-  return { activateMetaMask: requestAccounts, ethereum: provider, loadedAccounts };
+  return { activateMetaMask: requestAccounts, ethereum: provider, loadedAccounts, requestSignature };
 }
