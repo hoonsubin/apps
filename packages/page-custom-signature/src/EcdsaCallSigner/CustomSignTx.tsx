@@ -48,7 +48,7 @@ function CustomSignTx ({ className, signer }: Props): React.ReactElement<Props> 
 
       try {
         // reset the error message if it already exists
-        if (typeof errorMessage !== 'undefined') {
+        if (!errorMessage) {
           setErrorMessage(undefined);
         }
 

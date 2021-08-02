@@ -18,7 +18,7 @@ export function useMetaMask (): UseMetaMask {
   const [loadedAccounts, setLoadedAccounts] = useState<string[]>([]);
 
   const requestAccounts = useCallback(async () => {
-    if (typeof provider === 'undefined') {
+    if (!provider) {
       throw new Error('Cannot detect MetaMask');
     }
 
@@ -31,15 +31,14 @@ export function useMetaMask (): UseMetaMask {
 
   const requestSignature = useCallback(
     async (message: string, account: string = loadedAccounts[0]) => {
-      if (!account) {
+      if (!account || !provider) {
         // note: we can call `requestAccounts` here to ensure that an account always is loaded
         throw new Error('No account was provided for the signature');
       }
 
-      const extensionMethodPayload = { method: 'personal_sign', params: [account, message] };
-      const sigResponse = await provider?.request(extensionMethodPayload);
+      const sigResponse = await provider.request({ method: 'personal_sign', params: [account, message] });
 
-      if (typeof sigResponse !== 'string') {
+      if (!sigResponse || typeof sigResponse !== 'string') {
         throw new Error('Failed to get signature');
       }
 
