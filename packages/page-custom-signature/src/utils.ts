@@ -81,6 +81,7 @@ export const getPayload = (
   networkPrefix: number
 ): Uint8Array => {
   const methodPayload: Uint8Array = method.toU8a(true).slice(1);
+  // eslint-disable-next-line new-cap
   const prefix = new u16(new TypeRegistry(), networkPrefix);
   let payload = new Uint8Array(0);
 
